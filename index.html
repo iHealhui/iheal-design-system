@@ -24,81 +24,84 @@
 </nav>
 
 <main>
-    <h1>Foundations: Brand Logo</h1>
-    <div id="palette" class="token-grid">載入數據中...</div>
+    <h1>Foundations: All Colors</h1>
+    <div id="all-palettes">正在解析所有色票...</div>
+
+    <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
+
+    <h1>Components: Text Field</h1>
+    <div class="preview-box" style="background: white; padding: 40px; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div class="ihd-input-group error">
+            <label class="ihd-label" id="label-text">Label</label>
+            <div style="flex: 1;">
+                <input class="ihd-input" id="demo-input" value="Value">
+                <span class="error-msg" id="error-msg">錯誤提示內容</span>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script>
-    document.getElementById('time').innerText = new Date().toLocaleTimeString();
-
-    /**
-     * 解析 ihealtw 專屬路徑
-     * 例如處理 "{ihealtw.Ref.Color.Neutral.0}"
-     */
     function resolveToken(val, fullData) {
         if (typeof val === 'string' && val.startsWith('{')) {
-            // 去掉大括號並分割路徑
             const path = val.replace(/[{}]/g, '').split('.');
             let current = fullData;
-
             for (const part of path) {
-                if (current && current[part]) {
-                    current = current[part];
-                } else {
-                    console.warn("無法找到路徑節點:", part);
-                    return '#cbd5e1'; 
-                }
+                if (current && current[part]) { current = current[part]; }
+                else { return '#cbd5e1'; }
             }
-            // 遞迴解析直到拿到最終的 $value
             return resolveToken(current.$value, fullData);
         }
-        
-        // 處理顏色對象 { hex: "#..." } 或純數值
         return (val && typeof val === 'object' && val.hex) ? val.hex : val;
     }
 
     async function init() {
-        const palette = document.getElementById('palette');
         try {
-            // 抓取 JSON
             const res = await fetch('./data/tokens.json');
-            if (!res.ok) throw new Error(`載入失敗 (HTTP ${res.status})`);
-            
             const data = await res.json();
-            console.log("JSON 已成功載入:", data);
+            const root = data.ihealtw;
 
-            // 根據你的 JSON 結構：ihealtw -> Ref -> Color -> Brand Logo
-            const brandColors = data.ihealtw.Ref.Color['Brand Logo'];
-            
-            if (!brandColors) throw new Error("在 JSON 中找不到 'ihealtw.Ref.Color.Brand Logo'");
-
-            let html = "";
-            for (const [name, token] of Object.entries(brandColors)) {
-                // 將 ihealtw 根數據傳入解析器
-                const hex = resolveToken(token.$value, data);
-                html += `
-                    <div class="swatch">
-                        <div class="color-box" style="background: ${hex}"></div>
-                        <div class="info">
-                            <strong>${name}</strong><br>
-                            <code>${hex}</code>
-                        </div>
-                    </div>`;
+            // 1. 自動遍歷所有顏色群組
+            let allHtml = "";
+            for (const [groupName, colors] of Object.entries(root.Ref.Color)) {
+                allHtml += `<h3>${groupName}</h3><div class="token-grid">`;
+                for (const [shade, token] of Object.entries(colors)) {
+                    const hex = resolveToken(token.$value, data);
+                    allHtml += `
+                        <div class="swatch">
+                            <div class="color-box" style="background: ${hex}"></div>
+                            <div class="info"><strong>${shade}</strong><br><code>${hex}</code></div>
+                        </div>`;
+                }
+                allHtml += `</div>`;
             }
-            palette.innerHTML = html;
+            document.getElementById('all-palettes').innerHTML = allHtml;
+
+            // 2. 套用 Token 到 Text Field 元件
+            // 從 Sys Token 取得 Danger 顏色
+            const dangerColor = resolveToken(root.Sys.Color.Text.Danger.Danger.$value, data);
+            const errorBg = resolveToken(root.Sys.Color.Bg.Danger.Default.$value, data); // 引用你 JSON 裡的紅底
+            
+            const input = document.getElementById('demo-input');
+            input.style.borderColor = dangerColor;
+            input.style.backgroundColor = "#FFF0F4"; // 這是你 JSON 裡的 Red.10
+            
+            document.getElementById('error-msg').style.color = dangerColor;
+            document.getElementById('label-text').style.color = resolveToken(root.Sys.Color.Text.Neutral.Neutral.$value, data);
 
         } catch (err) {
-            console.error("腳本錯誤:", err);
-            palette.innerHTML = `
-                <div class="error-message">
-                    <h3>❌ 數據讀取失敗</h3>
-                    <p>${err.message}</p>
-                    <p style="font-size: 0.8rem;">請確認 <code>data/tokens.json</code> 的最外層 Key 是否為 <strong>ihealtw</strong>。</p>
-                </div>`;
+            console.error(err);
         }
     }
-
     init();
 </script>
+
+<style>
+    /* 增加橫向佈局樣式 */
+    .ihd-input-group { display: flex; align-items: flex-start; gap: 16px; max-width: 500px; }
+    .ihd-label { width: 100px; font-weight: 600; padding-top: 8px; font-size: 14px; }
+    .ihd-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid; font-size: 16px; outline: none; }
+    .error-msg { display: block; margin-top: 8px; font-size: 13px; }
+</style>
 </body>
 </html>
