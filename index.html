@@ -57,51 +57,84 @@
     </div>
 </main>
 
-<script>
-    // 核心解析邏輯：處理路徑引用 {ihd.Ref.Color...}
-    function getVariableValue(val, fullJson) {
-        if (typeof val === 'string' && val.startsWith('{')) {
-            const path = val.replace(/[{}]/g, '').split('.');
-            let current = fullJson;
-            for (const part of path) {
+async function start() {
+    const display = document.getElementById('brand-colors');
+    try {
+        const response = await fetch('data/tokens.json');
+        if (!response.ok) throw new Error(`找不到檔案 (Status: ${response.status})`);
+        
+        const rawData = await response.json();
+        console.log("成功抓取 JSON:", rawData);
+
+        // 核心修正：判斷 ihd 是否在根目錄，還是被包在 Mode 名稱下
+        let dataRoot;
+        if (rawData.ihd) {
+            dataRoot = rawData;
+        } else if (rawData["Mode 1"] && rawData["Mode 1"].ihd) {
+            dataRoot = rawData["Mode 1"];
+        } else {
+            // 如果還是找不到，嘗試遍歷所有 key
+            const firstKey = Object.keys(rawData)[0];
+            dataRoot = rawData[firstKey].ihd ? rawData[firstKey] : rawData;
+        }
+
+        // 取得 Brand Logo 路徑
+        const brandLogo = dataRoot.ihd.Ref.Color['Brand Logo'];
+        if (!brandLogo) throw new Error("找不到 ihd.Ref.Color['Brand Logo'] 路徑");
+
+        let brandHtml = '';
+        for (const [name, token] of Object.entries(brandLogo)) {
+            // 解析引用值 (例如 {ihd.Ref...})
+            const hex = getVariableValue(token.$value, dataRoot);
+            
+            brandHtml += `
+                <div class="swatch">
+                    <div class="preview" style="background: ${hex}"></div>
+                    <div class="details">
+                        <strong>${name}</strong><br>
+                        <code>${hex}</code>
+                    </div>
+                </div>`;
+        }
+        display.innerHTML = brandHtml;
+
+    } catch (error) {
+        console.error("解析報錯:", error);
+        display.innerHTML = `<div style="color:red; padding:20px; background:#fff; border-radius:8px;">
+            <h3>❌ 解析失敗</h3>
+            <p>${error.message}</p>
+            <small>請按 F12 查看 Console 取得詳細錯誤資訊</small>
+        </div>`;
+    }
+}
+
+// 修改後的解析函式：確保能處理不同的數據格式
+function getVariableValue(val, fullData) {
+    // 如果是引用格式 {ihd.Ref...}
+    if (typeof val === 'string' && val.startsWith('{')) {
+        const path = val.replace(/[{}]/g, '').split('.');
+        let current = fullData;
+        
+        for (const part of path) {
+            if (current && current[part]) {
                 current = current[part];
+            } else {
+                console.warn(`路徑遺失: ${val}`);
+                return '#eee'; // 找不到時的預設色
             }
-            return getVariableValue(current.$value, fullJson);
         }
-        // 處理你的 JSON 中的顏色對象結構
-        return val.hex || val;
+        // 遞迴解析直到拿到最終值
+        return getVariableValue(current.$value, fullData);
     }
-
-    async function start() {
-        try {
-            // 注意這裡的檔名要跟你上傳的一模一樣
-            const response = await fetch('data/tokens.json');
-            const data = await response.json();
-            
-            // 展示 Brand Logo 系列
-            const brandLogo = data.ihd.Ref.Color['Brand Logo'];
-            let brandHtml = '';
-            
-            for (const [name, token] of Object.entries(brandLogo)) {
-                const hex = getVariableValue(token.$value, data);
-                brandHtml += `
-                    <div class="swatch">
-                        <div class="preview" style="background: ${hex}"></div>
-                        <div class="details">
-                            <strong>${name}</strong><br>
-                            <code>${hex}</code>
-                        </div>
-                    </div>`;
-            }
-            document.getElementById('brand-colors').innerHTML = brandHtml;
-            
-        } catch (error) {
-            console.error("載入 JSON 失敗:", error);
-            document.getElementById('brand-colors').innerHTML = "請檢查 JSON 檔名與路徑是否正確。";
-        }
+    
+    // 如果 val 本身就是顏色對象 (包含 hex)
+    if (val && typeof val === 'object' && val.hex) {
+        return val.hex;
     }
+    
+    return val; // 直接回傳數值或顏色字串
+}
 
-    start();
-</script>
+start();
 </body>
 </html>
