@@ -2,139 +2,85 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>iHealtw Design System</title>
+    <title>IHD Design System Exhibition</title>
     <style>
-        :root { /* 這裡會由 JS 動態注入變數 */ }
-        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; color: #122F39; }
-        nav { width: 240px; background: #fff; border-right: 1px solid #D6E5EB; height: 100vh; padding: 20px; position: sticky; top: 0; }
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f5f7f8; }
+        nav { width: 220px; padding: 20px; border-right: 1px solid #ddd; background: #fff; height: 100vh; position: sticky; top: 0; }
         main { flex: 1; padding: 40px; }
-        .section-title { border-bottom: 2px solid #00C3DB; padding-bottom: 8px; margin-top: 40px; }
-        
-        /* 色票展示網格 */
-        .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-top: 20px; }
-        .swatch { background: #fff; border-radius: 12px; border: 1px solid #D6E5EB; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .preview { height: 80px; width: 100%; }
-        .details { padding: 12px; font-size: 12px; }
-        
-        /* Text Field 展示 */
-        .component-preview { background: #fff; padding: 32px; border-radius: 16px; border: 1px solid #D6E5EB; margin-top: 20px; }
-        .input-group { display: flex; align-items: flex-start; gap: 16px; }
-        .label { width: 80px; font-weight: 600; padding-top: 8px; }
-        .input-container { flex: 1; max-width: 300px; }
-        .text-input { 
-            width: 100%; padding: 10px; border-radius: 8px; font-size: 16px;
-            border: 1px solid #B81436; background: #FFF0F4; /* 模擬 Error 狀態 */
-        }
-        .error-text { color: #B81436; font-size: 13px; margin-top: 6px; display: block; }
+        .token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-bottom: 40px; }
+        .swatch { background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .color-box { height: 60px; width: 100%; }
+        .info { padding: 8px; }
+        .error-message { color: red; background: #fff; padding: 20px; border: 1px solid red; border-radius: 8px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <h2>iHealtw token</h2>
-    <ul>
-        <li>Foundations (Ref)</li>
-        <li>Semantic (Sys)</li>
-        <li>Components (Comp)</li>
-    </ul>
+    <h3>IHD Docs</h3>
+    <p>Last Update: <br><span id="update-time">Loading...</span></p>
 </nav>
 
-<main>
-    <h1 id="brand-title">Design Tokens</h1>
-    
-    <h2 class="section-title">Brand Logo Colors</h2>
-    <div id="brand-colors" class="color-grid"></div>
-
-    <h2 class="section-title">Component Preview: Text Field (Error State)</h2>
-    <div class="component-preview">
-        <div class="input-group">
-            <span class="label">Label</span>
-            <div class="input-container">
-                <input type="text" class="text-input" value="Value">
-                <span class="error-text">錯誤提示內容</span>
-            </div>
-        </div>
-    </div>
+<main id="main-content">
+    <h1>Foundations: Brand Logo</h1>
+    <div id="palette" class="token-grid">正在讀取資料...</div>
 </main>
 
-async function start() {
-    const display = document.getElementById('brand-colors');
-    try {
-        const response = await fetch('data/tokens.json');
-        if (!response.ok) throw new Error(`找不到檔案 (Status: ${response.status})`);
-        
-        const rawData = await response.json();
-        console.log("成功抓取 JSON:", rawData);
+<script>
+    // 顯示最後更新時間，確認檔案有覆蓋成功
+    document.getElementById('update-time').innerText = new Date().toLocaleString();
 
-        // 核心修正：判斷 ihd 是否在根目錄，還是被包在 Mode 名稱下
-        let dataRoot;
-        if (rawData.ihd) {
-            dataRoot = rawData;
-        } else if (rawData["Mode 1"] && rawData["Mode 1"].ihd) {
-            dataRoot = rawData["Mode 1"];
-        } else {
-            // 如果還是找不到，嘗試遍歷所有 key
-            const firstKey = Object.keys(rawData)[0];
-            dataRoot = rawData[firstKey].ihd ? rawData[firstKey] : rawData;
-        }
-
-        // 取得 Brand Logo 路徑
-        const brandLogo = dataRoot.ihd.Ref.Color['Brand Logo'];
-        if (!brandLogo) throw new Error("找不到 ihd.Ref.Color['Brand Logo'] 路徑");
-
-        let brandHtml = '';
-        for (const [name, token] of Object.entries(brandLogo)) {
-            // 解析引用值 (例如 {ihd.Ref...})
-            const hex = getVariableValue(token.$value, dataRoot);
-            
-            brandHtml += `
-                <div class="swatch">
-                    <div class="preview" style="background: ${hex}"></div>
-                    <div class="details">
-                        <strong>${name}</strong><br>
-                        <code>${hex}</code>
-                    </div>
-                </div>`;
-        }
-        display.innerHTML = brandHtml;
-
-    } catch (error) {
-        console.error("解析報錯:", error);
-        display.innerHTML = `<div style="color:red; padding:20px; background:#fff; border-radius:8px;">
-            <h3>❌ 解析失敗</h3>
-            <p>${error.message}</p>
-            <small>請按 F12 查看 Console 取得詳細錯誤資訊</small>
-        </div>`;
-    }
-}
-
-// 修改後的解析函式：確保能處理不同的數據格式
-function getVariableValue(val, fullData) {
-    // 如果是引用格式 {ihd.Ref...}
-    if (typeof val === 'string' && val.startsWith('{')) {
-        const path = val.replace(/[{}]/g, '').split('.');
-        let current = fullData;
-        
-        for (const part of path) {
-            if (current && current[part]) {
-                current = current[part];
-            } else {
-                console.warn(`路徑遺失: ${val}`);
-                return '#eee'; // 找不到時的預設色
+    // 萬能解析函式
+    function resolve(val, data) {
+        if (typeof val === 'string' && val.startsWith('{')) {
+            const path = val.replace(/[{}]/g, '').split('.');
+            let target = data;
+            for (const segment of path) {
+                if (!target[segment]) return '#eee';
+                target = target[segment];
             }
+            return resolve(target.$value, data);
         }
-        // 遞迴解析直到拿到最終值
-        return getVariableValue(current.$value, fullData);
+        return (val && val.hex) ? val.hex : val;
     }
-    
-    // 如果 val 本身就是顏色對象 (包含 hex)
-    if (val && typeof val === 'object' && val.hex) {
-        return val.hex;
-    }
-    
-    return val; // 直接回傳數值或顏色字串
-}
 
-start();
+    async function init() {
+        const palette = document.getElementById('palette');
+        try {
+            // 關鍵：確保路徑與 GitHub 上完全一致
+            const res = await fetch('./data/tokens.json');
+            
+            if (!res.ok) throw new Error(`找不到 tokens.json (狀態碼: ${res.status})`);
+            
+            const rawData = await res.json();
+            console.log("抓取到的原始資料:", rawData);
+
+            // 自動相容 Mode 1 或直接 ihd 結構
+            const dataRoot = rawData.ihd ? rawData : (rawData["Mode 1"] ? rawData["Mode 1"] : rawData);
+
+            // 生成 Brand Logo 展示
+            const colors = dataRoot.ihd.Ref.Color['Brand Logo'];
+            let html = "";
+            for (const [name, token] of Object.entries(colors)) {
+                const hex = resolve(token.$value, dataRoot);
+                html += `<div class="swatch">
+                    <div class="color-box" style="background: ${hex}"></div>
+                    <div class="info"><strong>${name}</strong><br>${hex}</div>
+                </div>`;
+            }
+            palette.innerHTML = html;
+
+        } catch (err) {
+            console.error("錯誤細節:", err);
+            palette.innerHTML = `<div class="error-message">
+                <h3>❌ 讀取失敗</h3>
+                <p>${err.message}</p>
+                <small>請確認 GitHub 上的 data/tokens.json 檔案是否存在。</small>
+            </div>`;
+        }
+    }
+
+    init();
+</script>
 </body>
 </html>
