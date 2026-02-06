@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>iHealtw Design System</title>
+    <style>
+        :root { /* 這裡會由 JS 動態注入變數 */ }
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; color: #122F39; }
+        nav { width: 240px; background: #fff; border-right: 1px solid #D6E5EB; height: 100vh; padding: 20px; position: sticky; top: 0; }
+        main { flex: 1; padding: 40px; }
+        .section-title { border-bottom: 2px solid #00C3DB; padding-bottom: 8px; margin-top: 40px; }
+        
+        /* 色票展示網格 */
+        .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-top: 20px; }
+        .swatch { background: #fff; border-radius: 12px; border: 1px solid #D6E5EB; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .preview { height: 80px; width: 100%; }
+        .details { padding: 12px; font-size: 12px; }
+        
+        /* Text Field 展示 */
+        .component-preview { background: #fff; padding: 32px; border-radius: 16px; border: 1px solid #D6E5EB; margin-top: 20px; }
+        .input-group { display: flex; align-items: flex-start; gap: 16px; }
+        .label { width: 80px; font-weight: 600; padding-top: 8px; }
+        .input-container { flex: 1; max-width: 300px; }
+        .text-input { 
+            width: 100%; padding: 10px; border-radius: 8px; font-size: 16px;
+            border: 1px solid #B81436; background: #FFF0F4; /* 模擬 Error 狀態 */
+        }
+        .error-text { color: #B81436; font-size: 13px; margin-top: 6px; display: block; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>iHealtw token</h2>
+    <ul>
+        <li>Foundations (Ref)</li>
+        <li>Semantic (Sys)</li>
+        <li>Components (Comp)</li>
+    </ul>
+</nav>
+
+<main>
+    <h1 id="brand-title">Design Tokens</h1>
+    
+    <h2 class="section-title">Brand Logo Colors</h2>
+    <div id="brand-colors" class="color-grid"></div>
+
+    <h2 class="section-title">Component Preview: Text Field (Error State)</h2>
+    <div class="component-preview">
+        <div class="input-group">
+            <span class="label">Label</span>
+            <div class="input-container">
+                <input type="text" class="text-input" value="Value">
+                <span class="error-text">錯誤提示內容</span>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // 核心解析邏輯：處理路徑引用 {ihd.Ref.Color...}
+    function getVariableValue(val, fullJson) {
+        if (typeof val === 'string' && val.startsWith('{')) {
+            const path = val.replace(/[{}]/g, '').split('.');
+            let current = fullJson;
+            for (const part of path) {
+                current = current[part];
+            }
+            return getVariableValue(current.$value, fullJson);
+        }
+        // 處理你的 JSON 中的顏色對象結構
+        return val.hex || val;
+    }
+
+    async function start() {
+        try {
+            // 注意這裡的檔名要跟你上傳的一模一樣
+            const response = await fetch('data/tokens.json');
+            const data = await response.json();
+            
+            // 展示 Brand Logo 系列
+            const brandLogo = data.ihd.Ref.Color['Brand Logo'];
+            let brandHtml = '';
+            
+            for (const [name, token] of Object.entries(brandLogo)) {
+                const hex = getVariableValue(token.$value, data);
+                brandHtml += `
+                    <div class="swatch">
+                        <div class="preview" style="background: ${hex}"></div>
+                        <div class="details">
+                            <strong>${name}</strong><br>
+                            <code>${hex}</code>
+                        </div>
+                    </div>`;
+            }
+            document.getElementById('brand-colors').innerHTML = brandHtml;
+            
+        } catch (error) {
+            console.error("載入 JSON 失敗:", error);
+            document.getElementById('brand-colors').innerHTML = "請檢查 JSON 檔名與路徑是否正確。";
+        }
+    }
+
+    start();
+</script>
+</body>
+</html>
