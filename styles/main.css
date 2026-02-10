@@ -410,10 +410,23 @@ main {
     font-size: 12px;
     color: #0F172A;
     font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Value：可以截斷，維持一行 */
+.ref-copy-text--value {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+/* Token：不要截斷，要完整顯示，可以自動換行 */
+.ref-copy-text--token {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-all;
+}
+
 
 .ref-copy-icon {
     width: 14px;
@@ -425,4 +438,35 @@ main {
 .ref-copy-btn:focus-visible {
     outline: 2px solid var(--primary-blue);
     outline-offset: 2px;
+}
+
+/* ========== 可收合的 CSS Variables 區塊 ========== */
+
+.code-collapsible {
+    margin-bottom: 32px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* 移除預設的小三角 icon，用自己的 header 當 summary */
+.code-collapsible > summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.code-collapsible > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* 讓 header 裡面可以左右排版 */
+.code-header-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.code-header-hint {
+    font-size: 11px;
+    color: #64748B;
+    margin-left: 12px;
 }
