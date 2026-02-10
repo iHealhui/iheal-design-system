@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>iHealtw Design System</title>
     <link rel="icon" href="data:,">
-    <!-- 保持原本的 CSS 連結，不變動 -->
+    <!-- 保持原有 CSS 連結 -->
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
@@ -25,15 +25,17 @@
         <!-- Welcome -->
         <div class="nav-item-flat" data-target="welcome">🏠 Welcome</div>
 
-        <!-- Foundations -->
+        <!-- 大標題：Foundations -->
         <details open class="main-group">
-            <summary>Foundations</summary>
+            <summary>▾ Foundations</summary>
 
+            <!-- Foundations 子項目 -->
             <div class="nav-item-flat" data-target="tokens">Tokens</div>
             <div class="nav-item-flat" data-target="accessibility">Accessibility</div>
 
+            <!-- Color 有子項目 -->
             <details open class="sub-group">
-                <summary>Color</summary>
+                <summary>▾ Color</summary>
                 <div class="nav-item" data-target="color-roles">↪ Color roles</div>
                 <div class="nav-item" data-target="color-palette">↪ Color palette</div>
             </details>
@@ -45,20 +47,20 @@
             <div class="nav-item-flat" data-target="grid">Grid</div>
         </details>
 
-        <!-- Components -->
+        <!-- 大標題：Components -->
         <details class="main-group">
-            <summary>Components</summary>
+            <summary>▾ Components</summary>
 
             <!-- General -->
             <details class="sub-group">
-                <summary>General</summary>
+                <summary>▾ General</summary>
                 <div class="nav-item" data-target="icon">↪ Icon</div>
                 <div class="nav-item" data-target="button">↪ Button</div>
             </details>
 
             <!-- Navigation -->
             <details class="sub-group">
-                <summary>Navigation</summary>
+                <summary>▾ Navigation</summary>
                 <div class="nav-item" data-target="breadcrumb">↪ Breadcrumb</div>
                 <div class="nav-item" data-target="menu">↪ Menu</div>
                 <div class="nav-item" data-target="navigation">↪ Navigation</div>
@@ -67,7 +69,7 @@
 
             <!-- Input Controls -->
             <details class="sub-group">
-                <summary>Input Controls</summary>
+                <summary>▾ Input Controls</summary>
                 <div class="nav-item" data-target="checkbox">↪ Checkbox</div>
                 <div class="nav-item" data-target="combobox">↪ Combobox</div>
                 <div class="nav-item" data-target="datepicker">↪ DatePicker</div>
@@ -80,7 +82,7 @@
 
             <!-- Data Display -->
             <details class="sub-group">
-                <summary>Data Display</summary>
+                <summary>▾ Data Display</summary>
                 <div class="nav-item" data-target="accordion">↪ Accordion</div>
                 <div class="nav-item" data-target="avatar">↪ Avatar</div>
                 <div class="nav-item" data-target="badges">↪ Badges</div>
@@ -95,7 +97,7 @@
 
             <!-- Feedback -->
             <details class="sub-group">
-                <summary>Feedback</summary>
+                <summary>▾ Feedback</summary>
                 <div class="nav-item" data-target="modal-dialog">↪ Modal Dialog</div>
                 <div class="nav-item" data-target="notification">↪ Notification</div>
                 <div class="nav-item" data-target="loading-spinner">↪ Loading Spinner</div>
@@ -108,7 +110,7 @@
     <div id="content-view" class="page-content"></div>
 </main>
 
-<!-- 保持原本的 JS 連結，不變動 -->
+<!-- 保持原有 JS 連結 -->
 <script src="./scripts/app.js"></script>
 </body>
 </html>
