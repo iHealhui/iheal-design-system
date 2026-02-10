@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>iHealtw Design System</title>
     <link rel="icon" href="data:,">
-    <!-- 原本 <style> 的內容已搬到 styles/main.css -->
+    <!-- 保持原本的 CSS 連結，不變動 -->
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
@@ -22,16 +22,83 @@
     </div>
 
     <nav id="menu">
+        <!-- Welcome -->
         <div class="nav-item-flat" data-target="welcome">🏠 Welcome</div>
 
+        <!-- Foundations -->
         <details open class="main-group">
             <summary>Foundations</summary>
+
             <div class="nav-item-flat" data-target="tokens">Tokens</div>
+            <div class="nav-item-flat" data-target="accessibility">Accessibility</div>
 
             <details open class="sub-group">
                 <summary>Color</summary>
                 <div class="nav-item" data-target="color-roles">↪ Color roles</div>
-                <div class="nav-item" data-target="color-palette">↪ Color Palette</div>
+                <div class="nav-item" data-target="color-palette">↪ Color palette</div>
+            </details>
+
+            <div class="nav-item-flat" data-target="typography">Typography</div>
+            <div class="nav-item-flat" data-target="spacing">Spacing</div>
+            <div class="nav-item-flat" data-target="corner">Corner</div>
+            <div class="nav-item-flat" data-target="shadow">Shadow</div>
+            <div class="nav-item-flat" data-target="grid">Grid</div>
+        </details>
+
+        <!-- Components -->
+        <details class="main-group">
+            <summary>Components</summary>
+
+            <!-- General -->
+            <details class="sub-group">
+                <summary>General</summary>
+                <div class="nav-item" data-target="icon">↪ Icon</div>
+                <div class="nav-item" data-target="button">↪ Button</div>
+            </details>
+
+            <!-- Navigation -->
+            <details class="sub-group">
+                <summary>Navigation</summary>
+                <div class="nav-item" data-target="breadcrumb">↪ Breadcrumb</div>
+                <div class="nav-item" data-target="menu">↪ Menu</div>
+                <div class="nav-item" data-target="navigation">↪ Navigation</div>
+                <div class="nav-item" data-target="pagination">↪ Pagination</div>
+            </details>
+
+            <!-- Input Controls -->
+            <details class="sub-group">
+                <summary>Input Controls</summary>
+                <div class="nav-item" data-target="checkbox">↪ Checkbox</div>
+                <div class="nav-item" data-target="combobox">↪ Combobox</div>
+                <div class="nav-item" data-target="datepicker">↪ DatePicker</div>
+                <div class="nav-item" data-target="dropdown">↪ Dropdown</div>
+                <div class="nav-item" data-target="text-input">↪ Text Input</div>
+                <div class="nav-item" data-target="slider">↪ Slider</div>
+                <div class="nav-item" data-target="switch">↪ Switch</div>
+                <div class="nav-item" data-target="radio">↪ Radio</div>
+            </details>
+
+            <!-- Data Display -->
+            <details class="sub-group">
+                <summary>Data Display</summary>
+                <div class="nav-item" data-target="accordion">↪ Accordion</div>
+                <div class="nav-item" data-target="avatar">↪ Avatar</div>
+                <div class="nav-item" data-target="badges">↪ Badges</div>
+                <div class="nav-item" data-target="card">↪ Card</div>
+                <div class="nav-item" data-target="chip">↪ Chip</div>
+                <div class="nav-item" data-target="image">↪ Image</div>
+                <div class="nav-item" data-target="table">↪ Table</div>
+                <div class="nav-item" data-target="tabs">↪ Tabs</div>
+                <div class="nav-item" data-target="tag">↪ Tag</div>
+                <div class="nav-item" data-target="toast">↪ Toast</div>
+            </details>
+
+            <!-- Feedback -->
+            <details class="sub-group">
+                <summary>Feedback</summary>
+                <div class="nav-item" data-target="modal-dialog">↪ Modal Dialog</div>
+                <div class="nav-item" data-target="notification">↪ Notification</div>
+                <div class="nav-item" data-target="loading-spinner">↪ Loading Spinner</div>
             </details>
         </details>
     </nav>
@@ -41,7 +108,7 @@
     <div id="content-view" class="page-content"></div>
 </main>
 
-<!-- 原本 <script> 的內容搬到 scripts/app.js -->
+<!-- 保持原本的 JS 連結，不變動 -->
 <script src="./scripts/app.js"></script>
 </body>
 </html>
