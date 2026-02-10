@@ -79,24 +79,69 @@ async function renderPage(pageId) {
         `;
         view.innerHTML = codeHeader + roleHtml;
     } else if (pageId === 'color-palette') {
-        let paletteHtml =
-            '<h1>Color Palette (Ref)</h1><p>基礎色標定義。點擊卡片複製 Hex 色碼。</p>';
-        for (const [group, colors] of Object.entries(root.Ref.Color)) {
-            paletteHtml += `<h3>${group}</h3><div class="token-grid">`;
-            for (const [shade, token] of Object.entries(colors)) {
-                const hex = resolve(token.$value, data);
-                paletteHtml += `
-                    <div class="swatch" onclick="copyToClipboard('${hex}')">
-                        <div class="color-box" style="background:${hex}"></div>
-                        <div class="swatch-info">
-                            <strong>${shade}</strong>
-                            <code>${hex}</code>
-                        </div>
-                    </div>`;
-            }
-            paletteHtml += `</div>`;
+    const view = document.getElementById('content-view');
+
+    let html = `
+        <h1>COLOR PALETTE (REF)</h1>
+        <p>基礎色票（Ref Color）。左側為實際顏色，中間為原始 Hex Value，右側為對應的 CSS 變數 Token。點擊 Value 或 Token 皆可複製文字。</p>
+    `;
+
+    html += `<div class="ref-swatch-list">`;
+
+    // root.Ref.Color 結構：root.Ref.Color.[Group].[Shade] => token
+    for (const [group, colors] of Object.entries(root.Ref.Color)) {
+        html += `<h2 class="ref-group-title">${group}</h2>`;
+
+        for (const [shade, token] of Object.entries(colors)) {
+            const hex = resolve(token.$value, data);
+
+            // 生成 token 名稱：--ihealtw-ref-color-Group-Shade
+            const safeGroup = group.replace(/\s+/g, '');
+            const varName = `--ihealtw-ref-color-${safeGroup}-${shade}`;
+
+            html += `
+                <div class="ref-swatch">
+                    <div class="ref-color-box" style="background:${hex}"></div>
+
+                    <div class="ref-col">
+                        <span class="ref-label">Value</span>
+                        <button
+                            class="ref-copy-btn"
+                            type="button"
+                            onclick="copyToClipboard('${hex}')"
+                        >
+                            <span class="ref-copy-text">${hex}</span>
+                            <img
+                                class="ref-copy-icon"
+                                src="./assets/icons/copy.svg"
+                                alt="Copy value"
+                            />
+                        </button>
+                    </div>
+
+                    <div class="ref-col">
+                        <span class="ref-label">Token (Variable)</span>
+                        <button
+                            class="ref-copy-btn"
+                            type="button"
+                            onclick="copyToClipboard('var(${varName})')"
+                        >
+                            <span class="ref-copy-text">var(${varName})</span>
+                            <img
+                                class="ref-copy-icon"
+                                src="./assets/icons/copy.svg"
+                                alt="Copy token"
+                            />
+                        </button>
+                    </div>
+                </div>
+            `;
         }
-        view.innerHTML = paletteHtml;
+    }
+
+    html += `</div>`;
+    view.innerHTML = html;
+
     } else if (pageId === 'tokens') {
         view.innerHTML = `
             <h1>Tokens</h1>
