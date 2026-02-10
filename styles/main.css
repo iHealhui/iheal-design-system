@@ -62,42 +62,68 @@ aside {
 }
 
 /* 導航樣式 */
-nav {
-    padding: 0 0 60px 0;
-    flex: 1;
+
+.nav-section {
+    margin-bottom: 24px;
 }
 
-details summary {
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #475569;
-    list-style: none;
-    cursor: pointer;
+.nav-section-title {
+    padding: 16px 24px 4px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94A3B8;
+}
+
+/* 第二層 + 第三層共用：用 flex 排 label / icon */
+.nav-item-flat,
+.nav-item {
     display: flex;
+    align-items: center;
     justify-content: space-between;
 }
 
-.nav-item {
-    padding: 8px 24px 8px 64px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #64748b;
-}
-
+/* 第二層 item（Foundations / Components 的子項） */
 .nav-item-flat {
-    padding: 12px 24px;
+    padding: 8px 24px;
     font-size: 14px;
-    color: #64748b;
+    color: #64748B;
     cursor: pointer;
 }
 
-.active {
-    background: var(--nav-active-bg) !important;
-    color: var(--primary-blue) !important;
-    font-weight: 600 !important;
-    border-right: 3px solid var(--primary-blue);
+/* 第三層：再縮排一些 */
+.nav-sub {
+    padding: 6px 24px 6px 40px;
+    font-size: 13px;
+    color: #64748B;
+    cursor: pointer;
 }
+
+/* label + chevron */
+.nav-label {
+    flex: 1;
+}
+
+/* Color 的 chevron icon */
+.nav-chevron {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    margin-left: 8px;
+    opacity: 0.7;
+    transition: transform 0.15s ease-out;
+}
+
+/* 展開時旋轉箭頭 */
+.nav-toggle-children.is-open .nav-chevron {
+    transform: rotate(180deg);
+}
+
+/* 被收合的 Color 第三層 */
+.is-hidden-child {
+    display: none !important;
+}
+
 
 /* 右側內容區 */
 main {

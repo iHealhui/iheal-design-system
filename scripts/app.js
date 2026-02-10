@@ -35,7 +35,7 @@ async function renderPage(pageId) {
     try {
         const res = await fetch("./data/tokens.json");
         data = await res.json();
-        root = data.ihealtw || data; // 保險處理
+        root = data.ihealtw || data;
     } catch (err) {
         console.error("Failed to load tokens.json", err);
         view.innerHTML = `<h1>${pageId.toUpperCase()}</h1><p>無法載入 tokens.json，請稍後再試。</p>`;
@@ -175,14 +175,12 @@ async function renderPage(pageId) {
 
         html += `<div class="ref-swatch-list">`;
 
-        // root.Ref.Color.[Group].[Shade] => token
         for (const [group, colors] of Object.entries(refColor)) {
             html += `<h2 class="ref-group-title">${group}</h2>`;
 
             for (const [shade, token] of Object.entries(colors)) {
                 const hex = resolve(token.$value, data);
 
-                // --ihealtw-ref-color-DarkTealBlue-10
                 const safeGroup = group.replace(/\s+/g, "");
                 const varName = `--ihealtw-ref-color-${safeGroup}-${shade}`;
 
@@ -231,7 +229,7 @@ async function renderPage(pageId) {
         return;
     }
 
-    // ========== TOKENS 頁（暫時簡單文案）==========
+    // ========== TOKENS / 其他簡單頁 ==========
     if (pageId === "tokens") {
         view.innerHTML = `
             <h1>TOKENS</h1>
@@ -240,11 +238,26 @@ async function renderPage(pageId) {
         return;
     }
 
-    // ========== WELCOME 頁 ==========
     if (pageId === "welcome") {
         view.innerHTML = `
             <h1>WELCOME</h1>
             <p>這裡是 iHealtw Design System 首頁。請從左側選擇 Foundations 或 Components，瀏覽顏色、字體、間距與元件規範。</p>
+        `;
+        return;
+    }
+
+    // Components 群組 overview：先統一簡單文案
+    if (
+        pageId === "general-overview" ||
+        pageId === "navigation-overview" ||
+        pageId === "input-controls-overview" ||
+        pageId === "data-display-overview" ||
+        pageId === "feedback-overview"
+    ) {
+        const title = pageId.replace("-overview", "").replace(/-/g, " ").toUpperCase();
+        view.innerHTML = `
+            <h1>${title}</h1>
+            <p>此區將整理 ${title} 相關元件的設計規範與最佳實務。內容建置中。</p>
         `;
         return;
     }
@@ -257,12 +270,30 @@ async function renderPage(pageId) {
     `;
 }
 
-// 4. 導航點擊事件：左側側邊欄
+// 4. 導覽點擊事件：左側側邊欄
 document.querySelectorAll(".nav-item, .nav-item-flat").forEach((item) => {
     item.addEventListener("click", function () {
-        document.querySelectorAll(".active").forEach((a) => a.classList.remove("active"));
-        this.classList.add("active");
+        const isToggleOnly = this.classList.contains("nav-toggle-children");
 
+        // Color 這種「只有展開/收合」的，就不要改 active
+        if (!isToggleOnly) {
+            document.querySelectorAll(".active").forEach((a) => a.classList.remove("active"));
+            this.classList.add("active");
+        }
+
+        // 處理 Color 的展開 / 收合
+        if (isToggleOnly) {
+            const groupClass = this.getAttribute("data-children-id"); // e.g. "color-children"
+            this.classList.toggle("is-open");
+
+            if (groupClass) {
+                document.querySelectorAll("." + groupClass).forEach((child) => {
+                    child.classList.toggle("is-hidden-child");
+                });
+            }
+        }
+
+        // 一般 nav item：有 data-target 才 renderPage
         const target = this.getAttribute("data-target");
         if (target) {
             renderPage(target);
@@ -270,25 +301,16 @@ document.querySelectorAll(".nav-item, .nav-item-flat").forEach((item) => {
     });
 });
 
-// 5. 搜尋框：依文字隱藏 / 顯示 nav 項目，並展開 details
+// 5. 搜尋框：依文字隱藏 / 顯示 nav 項目
 const searchInput = document.getElementById("componentSearch");
 if (searchInput) {
     searchInput.addEventListener("input", function (e) {
         const query = e.target.value.toLowerCase();
 
         document.querySelectorAll(".nav-item, .nav-item-flat").forEach((item) => {
-            const match = item.innerText.toLowerCase().includes(query);
+            const text = item.innerText.toLowerCase();
+            const match = text.includes(query);
             item.style.display = match ? "flex" : "none";
-
-            if (match && query) {
-                let p = item.closest("details");
-                while (p) {
-                    p.open = true;
-                    p = p.parentElement && p.parentElement.closest
-                        ? p.parentElement.closest("details")
-                        : null;
-                }
-            }
         });
     });
 }

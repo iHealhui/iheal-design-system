@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>iHealtw Design System</title>
     <link rel="icon" href="data:,">
-    <!-- 保持原本 CSS 連結 -->
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
@@ -22,87 +21,89 @@
     </div>
 
     <nav id="menu">
-        <!-- Welcome -->
-        <div class="nav-item-flat" data-target="welcome">🏠 Welcome</div>
 
-        <!-- ================= Foundations ================= -->
-        <details open class="main-group">
-            <summary>▾ Foundations</summary>
+        <!-- ===== FOUNDATIONS ===== -->
+        <div class="nav-section">
+            <div class="nav-section-title">FOUNDATIONS</div>
 
-            <!-- Foundations 子項目（8 個）-->
             <div class="nav-item-flat" data-target="tokens">Tokens</div>
             <div class="nav-item-flat" data-target="accessibility">Accessibility</div>
 
-            <!-- Color 是 Foundations 的子項目，自己又有子項目 -->
-            <details open class="sub-group">
-                <summary>▾ Color</summary>
-                <div class="nav-item" data-target="color-roles">↪ Color roles</div>
-                <div class="nav-item" data-target="color-palette">↪ Color palette</div>
-            </details>
+            <!-- Color：第二層 item + 可收合第三層 -->
+            <div
+                class="nav-item-flat nav-toggle-children"
+                data-children-id="color-children"
+            >
+                <span class="nav-label">Color</span>
+                <img
+                    class="nav-chevron"
+                    src="./assets/icons/chevron-down.svg"
+                    alt="Toggle Color"
+                />
+            </div>
+
+            <!-- Color 第三層子項目，預設收合 -->
+            <div class="nav-item nav-sub color-children is-hidden-child" data-target="color-roles">
+                ↪ Color roles
+            </div>
+            <div class="nav-item nav-sub color-children is-hidden-child" data-target="color-palette">
+                ↪ Color palette
+            </div>
 
             <div class="nav-item-flat" data-target="typography">Typography</div>
             <div class="nav-item-flat" data-target="spacing">Spacing</div>
             <div class="nav-item-flat" data-target="corner">Corner</div>
             <div class="nav-item-flat" data-target="shadow">Shadow</div>
             <div class="nav-item-flat" data-target="grid">Grid</div>
-        </details>
+        </div>
 
-        <!-- ================= Components ================= -->
-        <details class="main-group">
-            <summary>▾ Components</summary>
+        <!-- ===== COMPONENTS ===== -->
+        <div class="nav-section">
+            <div class="nav-section-title">COMPONENTS</div>
 
             <!-- General -->
-            <details class="sub-group">
-                <summary>▾ General</summary>
-                <div class="nav-item" data-target="icon">↪ Icon</div>
-                <div class="nav-item" data-target="button">↪ Button</div>
-            </details>
+            <div class="nav-item-flat" data-target="general-overview">General</div>
+            <div class="nav-item nav-sub" data-target="icon">↪ Icon</div>
+            <div class="nav-item nav-sub" data-target="button">↪ Button</div>
 
             <!-- Navigation -->
-            <details class="sub-group">
-                <summary>▾ Navigation</summary>
-                <div class="nav-item" data-target="breadcrumb">↪ Breadcrumb</div>
-                <div class="nav-item" data-target="menu">↪ Menu</div>
-                <div class="nav-item" data-target="navigation">↪ Navigation</div>
-                <div class="nav-item" data-target="pagination">↪ Pagination</div>
-            </details>
+            <div class="nav-item-flat" data-target="navigation-overview">Navigation</div>
+            <div class="nav-item nav-sub" data-target="breadcrumb">↪ Breadcrumb</div>
+            <div class="nav-item nav-sub" data-target="menu">↪ Menu</div>
+            <div class="nav-item nav-sub" data-target="navigation">↪ Navigation</div>
+            <div class="nav-item nav-sub" data-target="pagination">↪ Pagination</div>
 
             <!-- Input Controls -->
-            <details class="sub-group">
-                <summary>▾ Input Controls</summary>
-                <div class="nav-item" data-target="checkbox">↪ Checkbox</div>
-                <div class="nav-item" data-target="combobox">↪ Combobox</div>
-                <div class="nav-item" data-target="datepicker">↪ DatePicker</div>
-                <div class="nav-item" data-target="dropdown">↪ Dropdown</div>
-                <div class="nav-item" data-target="text-input">↪ Text Input</div>
-                <div class="nav-item" data-target="slider">↪ Slider</div>
-                <div class="nav-item" data-target="switch">↪ Switch</div>
-                <div class="nav-item" data-target="radio">↪ Radio</div>
-            </details>
+            <div class="nav-item-flat" data-target="input-controls-overview">Input Controls</div>
+            <div class="nav-item nav-sub" data-target="checkbox">↪ Checkbox</div>
+            <div class="nav-item nav-sub" data-target="combobox">↪ Combobox</div>
+            <div class="nav-item nav-sub" data-target="datepicker">↪ DatePicker</div>
+            <div class="nav-item nav-sub" data-target="dropdown">↪ Dropdown</div>
+            <div class="nav-item nav-sub" data-target="text-input">↪ Text Input</div>
+            <div class="nav-item nav-sub" data-target="slider">↪ Slider</div>
+            <div class="nav-item nav-sub" data-target="switch">↪ Switch</div>
+            <div class="nav-item nav-sub" data-target="radio">↪ Radio</div>
 
             <!-- Data Display -->
-            <details class="sub-group">
-                <summary>▾ Data Display</summary>
-                <div class="nav-item" data-target="accordion">↪ Accordion</div>
-                <div class="nav-item" data-target="avatar">↪ Avatar</div>
-                <div class="nav-item" data-target="badges">↪ Badges</div>
-                <div class="nav-item" data-target="card">↪ Card</div>
-                <div class="nav-item" data-target="chip">↪ Chip</div>
-                <div class="nav-item" data-target="image">↪ Image</div>
-                <div class="nav-item" data-target="table">↪ Table</div>
-                <div class="nav-item" data-target="tabs">↪ Tabs</div>
-                <div class="nav-item" data-target="tag">↪ Tag</div>
-                <div class="nav-item" data-target="toast">↪ Toast</div>
-            </details>
+            <div class="nav-item-flat" data-target="data-display-overview">Data Display</div>
+            <div class="nav-item nav-sub" data-target="accordion">↪ Accordion</div>
+            <div class="nav-item nav-sub" data-target="avatar">↪ Avatar</div>
+            <div class="nav-item nav-sub" data-target="badges">↪ Badges</div>
+            <div class="nav-item nav-sub" data-target="card">↪ Card</div>
+            <div class="nav-item nav-sub" data-target="chip">↪ Chip</div>
+            <div class="nav-item nav-sub" data-target="image">↪ Image</div>
+            <div class="nav-item nav-sub" data-target="table">↪ Table</div>
+            <div class="nav-item nav-sub" data-target="tabs">↪ Tabs</div>
+            <div class="nav-item nav-sub" data-target="tag">↪ Tag</div>
+            <div class="nav-item nav-sub" data-target="toast">↪ Toast</div>
 
             <!-- Feedback -->
-            <details class="sub-group">
-                <summary>▾ Feedback</summary>
-                <div class="nav-item" data-target="modal-dialog">↪ Modal Dialog</div>
-                <div class="nav-item" data-target="notification">↪ Notification</div>
-                <div class="nav-item" data-target="loading-spinner">↪ Loading Spinner</div>
-            </details>
-        </details>
+            <div class="nav-item-flat" data-target="feedback-overview">Feedback</div>
+            <div class="nav-item nav-sub" data-target="modal-dialog">↪ Modal Dialog</div>
+            <div class="nav-item nav-sub" data-target="notification">↪ Notification</div>
+            <div class="nav-item nav-sub" data-target="loading-spinner">↪ Loading Spinner</div>
+        </div>
+
     </nav>
 </aside>
 
@@ -110,7 +111,6 @@
     <div id="content-view" class="page-content"></div>
 </main>
 
-<!-- 保持原本 JS 連結 -->
 <script src="./scripts/app.js"></script>
 </body>
 </html>
