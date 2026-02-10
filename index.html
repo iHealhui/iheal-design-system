@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <title>iHealtw Design System</title>
     <link rel="icon" href="data:,">
+    <!-- 基礎樣式 -->
     <link rel="stylesheet" href="./styles/main.css">
+    <!-- 實際按鈕樣式（給工程師用） -->
+    <link rel="stylesheet" href="./styles/components.button.css">
+    <!-- Button 文件頁專用樣式 -->
+    <link rel="stylesheet" href="./styles/docs.button.css">
 </head>
 <body>
 
@@ -21,33 +26,24 @@
     </div>
 
     <nav id="menu">
+        <!-- Welcome -->
+        <div class="nav-item-flat" data-target="welcome">🏠 Welcome</div>
 
-        <!-- ===== FOUNDATIONS ===== -->
+        <!-- ======== FOUNDATIONS ======== -->
         <div class="nav-section">
             <div class="nav-section-title">FOUNDATIONS</div>
 
             <div class="nav-item-flat" data-target="tokens">Tokens</div>
             <div class="nav-item-flat" data-target="accessibility">Accessibility</div>
 
-            <!-- Color：第二層 item + 可收合第三層 -->
-            <div
-                class="nav-item-flat nav-toggle-children"
-                data-children-id="color-children"
-            >
+            <!-- Color 有子項目：roles / palette -->
+            <div class="nav-item-flat nav-collapser" data-submenu-id="nav-color-submenu">
                 <span class="nav-label">Color</span>
-                <img
-                    class="nav-chevron"
-                    src="./assets/icons/chevron-down.svg"
-                    alt="Toggle Color"
-                />
+                <img class="nav-chevron" src="./assets/icons/chevron-down.svg" alt="">
             </div>
-
-            <!-- Color 第三層子項目，預設收合 -->
-            <div class="nav-item nav-sub color-children is-hidden-child" data-target="color-roles">
-                ↪ Color roles
-            </div>
-            <div class="nav-item nav-sub color-children is-hidden-child" data-target="color-palette">
-                ↪ Color palette
+            <div id="nav-color-submenu" class="nav-sublist nav-sublist--collapsed">
+                <div class="nav-item nav-item-sub" data-target="color-roles">↪ Color roles</div>
+                <div class="nav-item nav-item-sub" data-target="color-palette">↪ Color palette</div>
             </div>
 
             <div class="nav-item-flat" data-target="typography">Typography</div>
@@ -57,53 +53,62 @@
             <div class="nav-item-flat" data-target="grid">Grid</div>
         </div>
 
-        <!-- ===== COMPONENTS ===== -->
+        <!-- ======== COMPONENTS ======== -->
         <div class="nav-section">
             <div class="nav-section-title">COMPONENTS</div>
 
             <!-- General -->
-            <div class="nav-item-flat" data-target="general-overview">General</div>
-            <div class="nav-item nav-sub" data-target="icon">↪ Icon</div>
-            <div class="nav-item nav-sub" data-target="button">↪ Button</div>
+            <div class="nav-group">
+                <div class="nav-group-label">General</div>
+                <div class="nav-item nav-item-sub" data-target="icon">↪ Icon</div>
+                <div class="nav-item nav-item-sub" data-target="button">↪ Button</div>
+            </div>
 
             <!-- Navigation -->
-            <div class="nav-item-flat" data-target="navigation-overview">Navigation</div>
-            <div class="nav-item nav-sub" data-target="breadcrumb">↪ Breadcrumb</div>
-            <div class="nav-item nav-sub" data-target="menu">↪ Menu</div>
-            <div class="nav-item nav-sub" data-target="navigation">↪ Navigation</div>
-            <div class="nav-item nav-sub" data-target="pagination">↪ Pagination</div>
+            <div class="nav-group">
+                <div class="nav-group-label">Navigation</div>
+                <div class="nav-item nav-item-sub" data-target="breadcrumb">↪ Breadcrumb</div>
+                <div class="nav-item nav-item-sub" data-target="menu">↪ Menu</div>
+                <div class="nav-item nav-item-sub" data-target="navigation">↪ Navigation</div>
+                <div class="nav-item nav-item-sub" data-target="pagination">↪ Pagination</div>
+            </div>
 
             <!-- Input Controls -->
-            <div class="nav-item-flat" data-target="input-controls-overview">Input Controls</div>
-            <div class="nav-item nav-sub" data-target="checkbox">↪ Checkbox</div>
-            <div class="nav-item nav-sub" data-target="combobox">↪ Combobox</div>
-            <div class="nav-item nav-sub" data-target="datepicker">↪ DatePicker</div>
-            <div class="nav-item nav-sub" data-target="dropdown">↪ Dropdown</div>
-            <div class="nav-item nav-sub" data-target="text-input">↪ Text Input</div>
-            <div class="nav-item nav-sub" data-target="slider">↪ Slider</div>
-            <div class="nav-item nav-sub" data-target="switch">↪ Switch</div>
-            <div class="nav-item nav-sub" data-target="radio">↪ Radio</div>
+            <div class="nav-group">
+                <div class="nav-group-label">Input Controls</div>
+                <div class="nav-item nav-item-sub" data-target="checkbox">↪ Checkbox</div>
+                <div class="nav-item nav-item-sub" data-target="combobox">↪ Combobox</div>
+                <div class="nav-item nav-item-sub" data-target="datepicker">↪ DatePicker</div>
+                <div class="nav-item nav-item-sub" data-target="dropdown">↪ Dropdown</div>
+                <div class="nav-item nav-item-sub" data-target="text-input">↪ Text Input</div>
+                <div class="nav-item nav-item-sub" data-target="slider">↪ Slider</div>
+                <div class="nav-item nav-item-sub" data-target="switch">↪ Switch</div>
+                <div class="nav-item nav-item-sub" data-target="radio">↪ Radio</div>
+            </div>
 
             <!-- Data Display -->
-            <div class="nav-item-flat" data-target="data-display-overview">Data Display</div>
-            <div class="nav-item nav-sub" data-target="accordion">↪ Accordion</div>
-            <div class="nav-item nav-sub" data-target="avatar">↪ Avatar</div>
-            <div class="nav-item nav-sub" data-target="badges">↪ Badges</div>
-            <div class="nav-item nav-sub" data-target="card">↪ Card</div>
-            <div class="nav-item nav-sub" data-target="chip">↪ Chip</div>
-            <div class="nav-item nav-sub" data-target="image">↪ Image</div>
-            <div class="nav-item nav-sub" data-target="table">↪ Table</div>
-            <div class="nav-item nav-sub" data-target="tabs">↪ Tabs</div>
-            <div class="nav-item nav-sub" data-target="tag">↪ Tag</div>
-            <div class="nav-item nav-sub" data-target="toast">↪ Toast</div>
+            <div class="nav-group">
+                <div class="nav-group-label">Data Display</div>
+                <div class="nav-item nav-item-sub" data-target="accordion">↪ Accordion</div>
+                <div class="nav-item nav-item-sub" data-target="avatar">↪ Avatar</div>
+                <div class="nav-item nav-item-sub" data-target="badges">↪ Badges</div>
+                <div class="nav-item nav-item-sub" data-target="card">↪ Card</div>
+                <div class="nav-item nav-item-sub" data-target="chip">↪ Chip</div>
+                <div class="nav-item nav-item-sub" data-target="image">↪ Image</div>
+                <div class="nav-item nav-item-sub" data-target="table">↪ Table</div>
+                <div class="nav-item nav-item-sub" data-target="tabs">↪ Tabs</div>
+                <div class="nav-item nav-item-sub" data-target="tag">↪ Tag</div>
+                <div class="nav-item nav-item-sub" data-target="toast">↪ Toast</div>
+            </div>
 
             <!-- Feedback -->
-            <div class="nav-item-flat" data-target="feedback-overview">Feedback</div>
-            <div class="nav-item nav-sub" data-target="modal-dialog">↪ Modal Dialog</div>
-            <div class="nav-item nav-sub" data-target="notification">↪ Notification</div>
-            <div class="nav-item nav-sub" data-target="loading-spinner">↪ Loading Spinner</div>
+            <div class="nav-group">
+                <div class="nav-group-label">Feedback</div>
+                <div class="nav-item nav-item-sub" data-target="modal-dialog">↪ Modal Dialog</div>
+                <div class="nav-item nav-item-sub" data-target="notification">↪ Notification</div>
+                <div class="nav-item nav-item-sub" data-target="loading-spinner">↪ Loading Spinner</div>
+            </div>
         </div>
-
     </nav>
 </aside>
 
@@ -111,6 +116,7 @@
     <div id="content-view" class="page-content"></div>
 </main>
 
-<script src="./scripts/app.js"></script>
+<!-- 使用 ES Modules -->
+<script type="module" src="./scripts/core.js"></script>
 </body>
 </html>
