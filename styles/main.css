@@ -316,10 +316,24 @@ main {
 }
 
 .ref-color-box {
-    width: 64px;
-    min-height: 48px;
-    border-right: 1px solid #e2e8f0;
+    height: 100px;
+    width: 100%;
+    border-bottom: 1px solid #f1f5f9;
+    position: relative;
+    overflow: hidden;
+    /* 棋盤格背景，讓透明度看得出來 */
+    background-image:
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0),
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
 }
+
+.ref-color-fill {
+    width: 100%;
+    height: 100%;
+}
+
 
 .ref-col {
     padding: 8px 12px;

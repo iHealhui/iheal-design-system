@@ -1,4 +1,4 @@
-import { loadTokens, resolve, copyToClipboard } from "./utils.js";
+import { loadTokens, resolveColorToken, copyToClipboard } from "./utils.js";
 
 export async function renderColorRolesPage() {
     const view = document.getElementById("content-view");
@@ -13,7 +13,7 @@ export async function renderColorRolesPage() {
         return;
     }
 
-    const bg = root.Sys && root.Sys.Color && root.Sys.Color.Bg ? root.Sys.Color.Bg : {};
+    const bg = root.Sys && root.Sys.Color && root.Sys.Color["Bg"] ? root.Sys.Color["Bg"] : {};
     const roleOrder = ["Primary", "Neutral", "Danger", "Success", "Info"];
     const stateOrder = [
         "Default",
@@ -25,6 +25,7 @@ export async function renderColorRolesPage() {
         "Disabled"
     ];
 
+    // 產生 :root 裡的變數（包含 alpha）
     let cssVars = ":root {\n";
     roleOrder.forEach((role) => {
         const group = bg[role];
@@ -32,18 +33,18 @@ export async function renderColorRolesPage() {
         stateOrder.forEach((state) => {
             const token = group[state];
             if (!token) return;
-            const hex = resolve(token.$value, data);
+            const colorInfo = resolveColorToken(token.$value, data);
             const varName = `--ihealtw-sys-bg-${role.toLowerCase().replace(/\s+/g, "-")}-${state
                 .toLowerCase()
                 .replace(/\s+/g, "-")}`;
-            cssVars += `  ${varName}: ${hex};\n`;
+            cssVars += `  ${varName}: ${colorInfo.cssColor};\n`;
         });
     });
     cssVars += "}\n";
 
     let html = `
         <h1>COLOR ROLES – BACKGROUND</h1>
-        <p>以 <code>Sys.Color.Bg.[Role].[State]</code> 為主，對應到底層 Ref Color。左側為實際顏色，中間為該狀態的 Hex Value，右側為對應的 CSS 變數 Token。</p>
+        <p>以 <code>Sys.Color.Bg.[Role].[State]</code> 為主，對應到底層 Ref Color。左側為實際顏色，中間為該狀態的色碼（含 alpha），右側為對應的 CSS 變數 Token。</p>
 
         <details class="code-collapsible">
             <summary>
@@ -73,23 +74,32 @@ export async function renderColorRolesPage() {
             const token = group[state];
             if (!token) return;
 
-            const hex = resolve(token.$value, data);
+            const colorInfo = resolveColorToken(token.$value, data);
             const varName = `--ihealtw-sys-bg-${role.toLowerCase().replace(/\s+/g, "-")}-${state
                 .toLowerCase()
                 .replace(/\s+/g, "-")}`;
 
+            const displayValue =
+                colorInfo.alpha < 1
+                    ? `${colorInfo.rgba} · α=${(colorInfo.alpha * 100).toFixed(0)}%`
+                    : colorInfo.hex || colorInfo.cssColor;
+
+            const copyValue = colorInfo.alpha < 1 ? colorInfo.rgba : (colorInfo.hex || colorInfo.cssColor);
+
             html += `
                 <div class="ref-swatch">
-                    <div class="ref-color-box" style="background:${hex}"></div>
+                    <div class="ref-color-box">
+                        <div class="ref-color-fill" style="background:${colorInfo.cssColor}"></div>
+                    </div>
 
                     <div class="ref-col">
-                        <span class="ref-label">Value · ${state}</span>
+                        <span class="ref-label">Value</span>
                         <button
                             class="ref-copy-btn"
                             type="button"
-                            onclick="window.ihealtwCopy('${hex}')"
+                            onclick="window.ihealtwCopy('${copyValue}')"
                         >
-                            <span class="ref-copy-text ref-copy-text--value">${hex}</span>
+                            <span class="ref-copy-text ref-copy-text--value">${displayValue}</span>
                             <img
                                 class="ref-copy-icon"
                                 src="./assets/icons/copy.svg"
@@ -144,7 +154,7 @@ export async function renderColorPalettePage() {
 
     let html = `
         <h1>COLOR PALETTE (REF)</h1>
-        <p>基礎色票（Ref Color）。左側為實際顏色，中間為原始 Hex Value，右側為對應的 CSS 變數 Token。點擊 Value 或 Token 皆可複製文字。</p>
+        <p>基礎色票（Ref Color）。左側為實際顏色，中間為原始色值（含 alpha），右側為對應的 CSS 變數 Token。點擊 Value 或 Token 皆可複製文字。</p>
     `;
 
     html += `<div class="ref-swatch-list">`;
@@ -153,22 +163,31 @@ export async function renderColorPalettePage() {
         html += `<h2 class="ref-group-title">${group}</h2>`;
 
         for (const [shade, token] of Object.entries(colors)) {
-            const hex = resolve(token.$value, data);
+            const colorInfo = resolveColorToken(token.$value, data);
             const safeGroup = group.replace(/\s+/g, "");
             const varName = `--ihealtw-ref-color-${safeGroup}-${shade}`;
 
+            const displayValue =
+                colorInfo.alpha < 1
+                    ? `${colorInfo.rgba} · α=${(colorInfo.alpha * 100).toFixed(0)}%`
+                    : colorInfo.hex || colorInfo.cssColor;
+
+            const copyValue = colorInfo.alpha < 1 ? colorInfo.rgba : (colorInfo.hex || colorInfo.cssColor);
+
             html += `
                 <div class="ref-swatch">
-                    <div class="ref-color-box" style="background:${hex}"></div>
+                    <div class="ref-color-box">
+                        <div class="ref-color-fill" style="background:${colorInfo.cssColor}"></div>
+                    </div>
 
                     <div class="ref-col">
                         <span class="ref-label">Value</span>
                         <button
                             class="ref-copy-btn"
                             type="button"
-                            onclick="window.ihealtwCopy('${hex}')"
+                            onclick="window.ihealtwCopy('${copyValue}')"
                         >
-                            <span class="ref-copy-text ref-copy-text--value">${hex}</span>
+                            <span class="ref-copy-text ref-copy-text--value">${displayValue}</span>
                             <img
                                 class="ref-copy-icon"
                                 src="./assets/icons/copy.svg"
