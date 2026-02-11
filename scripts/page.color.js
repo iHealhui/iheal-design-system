@@ -1,5 +1,13 @@
 import { loadTokens, resolveColorToken, copyToClipboard } from "./utils.js";
 
+function kebab(str) {
+    return String(str)
+        .trim()
+        .replace(/[.\s/]+/g, "-")
+        .replace(/-+/g, "-")
+        .toLowerCase();
+}
+
 export async function renderColorRolesPage() {
     const view = document.getElementById("content-view");
     if (!view) return;
@@ -13,45 +21,105 @@ export async function renderColorRolesPage() {
         return;
     }
 
-    const bg = root.Sys && root.Sys.Color && root.Sys.Color["Bg"] ? root.Sys.Color["Bg"] : {};
-    const roleOrder = ["Primary", "Neutral", "Danger", "Success", "Info"];
-    const stateOrder = [
-        "Default",
-        "Hover",
-        "Soft-hover",
-        "Pressed",
-        "Soft-pressed",
-        "Focus",
-        "Disabled"
+    const colorSys = (root.Sys && root.Sys.Color) ? root.Sys.Color : {};
+
+    const sections = [
+        {
+            sysKey: "Bg",
+            cssCategory: "bg",
+            label: "Background",
+            description: "背景相關語意顏色，用於頁面底色、卡片、按鈕等。",
+            rolesOrder: [
+                "Surface",
+                "Surface container",
+                "Primary",
+                "Neutral",
+                "Danger",
+                "Success",
+                "Warning",
+                "Info"
+            ]
+        },
+        {
+            sysKey: "Text",
+            cssCategory: "text",
+            label: "Text",
+            description: "文字與 On-* 類顏色，確保在不同底色上有足夠對比。",
+            rolesOrder: [
+                "Surface",
+                "Primary",
+                "Neutral",
+                "Danger",
+                "Success"
+            ]
+        },
+        {
+            sysKey: "Border",
+            cssCategory: "border",
+            label: "Border",
+            description: "邊框顏色，用於分隔、輪廓、可點擊元素邊界。",
+            rolesOrder: [
+                "Surface",
+                "Surface container",
+                "Primary",
+                "Neutral",
+                "Danger",
+                "Success",
+                "Info"
+            ]
+        },
+        {
+            sysKey: "State layers",
+            cssCategory: "state-layer",
+            label: "State layers",
+            description: "狀態疊加層，通常搭配 Alpha 顏色，用於 hover / pressed 等互動疊色。",
+            rolesOrder: [
+                "Surface",
+                "on-surface"
+            ]
+        }
     ];
 
-    // 產生 :root 裡的變數（包含 alpha）
+    // 先組合 :root 裡的 CSS 變數（全部類別一起）
     let cssVars = ":root {\n";
-    roleOrder.forEach((role) => {
-        const group = bg[role];
-        if (!group) return;
-        stateOrder.forEach((state) => {
-            const token = group[state];
-            if (!token) return;
-            const colorInfo = resolveColorToken(token.$value, data);
-            const varName = `--ihealtw-sys-bg-${role.toLowerCase().replace(/\s+/g, "-")}-${state
-                .toLowerCase()
-                .replace(/\s+/g, "-")}`;
-            cssVars += `  ${varName}: ${colorInfo.cssColor};\n`;
+
+    sections.forEach((section) => {
+        const sysObj = colorSys[section.sysKey];
+        if (!sysObj) return;
+
+        const roles = section.rolesOrder || Object.keys(sysObj);
+        roles.forEach((role) => {
+            const group = sysObj[role];
+            if (!group) return;
+
+            const states = Object.keys(group);
+            states.forEach((state) => {
+                const token = group[state];
+                if (!token) return;
+
+                const colorInfo = resolveColorToken(token.$value, data);
+                const roleK = kebab(role);
+                const stateK = kebab(state);
+                const varName = `--ihealtw-sys-${section.cssCategory}-${roleK}-${stateK}`;
+
+                cssVars += `  ${varName}: ${colorInfo.cssColor};\n`;
+            });
         });
     });
+
     cssVars += "}\n";
 
+    // 組 HTML
     let html = `
-        <h1>COLOR ROLES – BACKGROUND</h1>
-        <p>以 <code>Sys.Color.Bg.[Role].[State]</code> 為主，對應到底層 Ref Color。左側為實際顏色，中間為該狀態的色碼（含 alpha），右側為對應的 CSS 變數 Token。</p>
+        <h1>COLOR ROLES</h1>
+        <p>Sys Color 將顏色依 <code>Bg / Text / Border / State layers</code> 與語意角色分組。左側為實際顏色（含透明度棋盤格），中間為色值，右側為對應的 CSS 變數 Token。</p>
 
         <details class="code-collapsible">
             <summary>
                 <div class="code-header">
                     <div class="code-header-main">
                         <span>css-variables.css</span>
-                        <span class="code-header-hint">點擊展開 / 收合全部變數</span>
+                        <span class="code-header-hint">點擊展開 / 收合全部 Sys Color 變數</span>
                     </div>
                     <button class="btn-copy-all" type="button" data-copy-all="color-roles">
                         Copy All Variables
@@ -60,71 +128,87 @@ export async function renderColorRolesPage() {
             </summary>
             <pre class="code-block">${cssVars}</pre>
         </details>
+
+        <div class="ref-swatch-list">
     `;
 
-    html += `<div class="ref-swatch-list">`;
+    sections.forEach((section) => {
+        const sysObj = colorSys[section.sysKey];
+        if (!sysObj) return;
 
-    roleOrder.forEach((role) => {
-        const group = bg[role];
-        if (!group) return;
+        html += `
+            <h2 class="ref-group-title">${section.label}</h2>
+            <p class="ref-group-desc">${section.description}</p>
+        `;
 
-        html += `<h2 class="ref-group-title">${role}</h2>`;
+        const roles = section.rolesOrder || Object.keys(sysObj);
 
-        stateOrder.forEach((state) => {
-            const token = group[state];
-            if (!token) return;
+        roles.forEach((role) => {
+            const group = sysObj[role];
+            if (!group) return;
 
-            const colorInfo = resolveColorToken(token.$value, data);
-            const varName = `--ihealtw-sys-bg-${role.toLowerCase().replace(/\s+/g, "-")}-${state
-                .toLowerCase()
-                .replace(/\s+/g, "-")}`;
+            html += `<h3 class="ref-role-title">${role}</h3>`;
 
-            const displayValue =
-                colorInfo.alpha < 1
-                    ? `${colorInfo.rgba} · α=${(colorInfo.alpha * 100).toFixed(0)}%`
-                    : colorInfo.hex || colorInfo.cssColor;
+            const states = Object.keys(group);
+            states.forEach((state) => {
+                const token = group[state];
+                if (!token) return;
 
-            const copyValue = colorInfo.alpha < 1 ? colorInfo.rgba : (colorInfo.hex || colorInfo.cssColor);
+                const colorInfo = resolveColorToken(token.$value, data);
+                const roleK = kebab(role);
+                const stateK = kebab(state);
+                const varName = `--ihealtw-sys-${section.cssCategory}-${roleK}-${stateK}`;
 
-            html += `
-                <div class="ref-swatch">
-                    <div class="ref-color-box">
-                        <div class="ref-color-fill" style="background:${colorInfo.cssColor}"></div>
+                const displayValue =
+                    colorInfo.alpha < 1
+                        ? `${colorInfo.rgba} · α=${(colorInfo.alpha * 100).toFixed(0)}%`
+                        : (colorInfo.hex || colorInfo.cssColor);
+
+                const copyValue =
+                    colorInfo.alpha < 1
+                        ? colorInfo.rgba
+                        : (colorInfo.hex || colorInfo.cssColor);
+
+                html += `
+                    <div class="ref-swatch">
+                        <div class="ref-color-box">
+                            <div class="ref-color-fill" style="background:${colorInfo.cssColor}"></div>
+                        </div>
+
+                        <div class="ref-col">
+                            <span class="ref-label">Value · ${state}</span>
+                            <button
+                                class="ref-copy-btn"
+                                type="button"
+                                onclick="window.ihealtwCopy('${copyValue}')"
+                            >
+                                <span class="ref-copy-text ref-copy-text--value">${displayValue}</span>
+                                <img
+                                    class="ref-copy-icon"
+                                    src="./assets/icons/copy.svg"
+                                    alt="Copy value"
+                                />
+                            </button>
+                        </div>
+
+                        <div class="ref-col">
+                            <span class="ref-label">Token</span>
+                            <button
+                                class="ref-copy-btn"
+                                type="button"
+                                onclick="window.ihealtwCopy('${varName}')"
+                            >
+                                <span class="ref-copy-text ref-copy-text--token">${varName}</span>
+                                <img
+                                    class="ref-copy-icon"
+                                    src="./assets/icons/copy.svg"
+                                    alt="Copy token"
+                                />
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="ref-col">
-                        <span class="ref-label">Value</span>
-                        <button
-                            class="ref-copy-btn"
-                            type="button"
-                            onclick="window.ihealtwCopy('${copyValue}')"
-                        >
-                            <span class="ref-copy-text ref-copy-text--value">${displayValue}</span>
-                            <img
-                                class="ref-copy-icon"
-                                src="./assets/icons/copy.svg"
-                                alt="Copy value"
-                            />
-                        </button>
-                    </div>
-
-                    <div class="ref-col">
-                        <span class="ref-label">Token (Background)</span>
-                        <button
-                            class="ref-copy-btn"
-                            type="button"
-                            onclick="window.ihealtwCopy('${varName}')"
-                        >
-                            <span class="ref-copy-text ref-copy-text--token">${varName}</span>
-                            <img
-                                class="ref-copy-icon"
-                                src="./assets/icons/copy.svg"
-                                alt="Copy token"
-                            />
-                        </button>
-                    </div>
-                </div>
-            `;
+                `;
+            });
         });
     });
 
@@ -170,9 +254,12 @@ export async function renderColorPalettePage() {
             const displayValue =
                 colorInfo.alpha < 1
                     ? `${colorInfo.rgba} · α=${(colorInfo.alpha * 100).toFixed(0)}%`
-                    : colorInfo.hex || colorInfo.cssColor;
+                    : (colorInfo.hex || colorInfo.cssColor);
 
-            const copyValue = colorInfo.alpha < 1 ? colorInfo.rgba : (colorInfo.hex || colorInfo.cssColor);
+            const copyValue =
+                colorInfo.alpha < 1
+                    ? colorInfo.rgba
+                    : (colorInfo.hex || colorInfo.cssColor);
 
             html += `
                 <div class="ref-swatch">

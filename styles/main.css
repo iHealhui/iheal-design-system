@@ -411,3 +411,19 @@ main {
         bottom: 30px;
     }
 }
+
+/* 標示 Sys Color 內部角色 (Primary / Neutral / ... ) 的小標題 */
+.ref-role-title {
+    font-size: 13px;
+    margin: 16px 0 6px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* 類別說明文字 */
+.ref-group-desc {
+    margin: 4px 0 12px;
+    font-size: 13px;
+    color: #64748b;
+}
+
